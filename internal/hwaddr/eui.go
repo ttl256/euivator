@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"net/netip"
 	"strings"
 )
 
@@ -154,7 +155,7 @@ type EUI48 [6]byte
 
 // Equivalent to ToString(a[:], []byte{':'}, 1).
 func (a EUI48) String() string {
-	return ToString(a[:], []byte{':'}, 1)
+	return AsColon(a[:])
 }
 
 func (a EUI48) EUI64Modified() EUI64 {
@@ -192,13 +193,30 @@ type EUI64 [8]byte
 
 // Equivalent to ToString(a[:], []byte{':'}, 1).
 func (a EUI64) String() string {
-	return ToString(a[:], []byte{':'}, 1)
+	return AsColon(a[:])
 }
 
-// AppendToPrefix writes [EUI64] in to 8 least significant bytes of a prefix.
-func AppendToPrefix(prefix [16]byte, eui64 EUI64) [16]byte {
-	copy(prefix[8:], eui64[:])
-	return prefix
+// AppendToPrefix writes [EUI64] into 8 least significant bytes of a prefix.
+func AppendToPrefix(prefix netip.Prefix, eui64 EUI64) netip.Addr {
+	prefixBytes := prefix.Addr().As16()
+	copy(prefixBytes[8:], eui64[:])
+	return netip.AddrFrom16(prefixBytes)
+}
+
+func AsColon(addr []byte) string {
+	return ToString(addr, []byte{':'}, 1)
+}
+
+func AsDash(addr []byte) string {
+	return ToString(addr, []byte{'-'}, 1)
+}
+
+func AsDot(addr []byte) string {
+	return ToString(addr, []byte{'.'}, ByteHex)
+}
+
+func AsPlain(addr []byte) string {
+	return ToString(addr, []byte{}, 0)
 }
 
 /*
@@ -212,7 +230,7 @@ func ToString(addr []byte, sep []byte, count int) string {
 		panic(fmt.Sprintf("count must be a non-negative integer, got %d", count))
 	}
 
-	var maxLen = len(addr)*(ByteHex+len(sep)) - len(sep)
+	var maxLen = max(len(addr)*(ByteHex+len(sep))-len(sep), 0)
 
 	if count == 0 {
 		count = maxLen

@@ -103,6 +103,8 @@ func TestToString(t *testing.T) {
 		count int
 		want  string
 	}{
+		{[]byte{}, []byte{':'}, 1, ""},
+		{[]byte{0x00}, []byte{':'}, 1, "00"},
 		{[]byte{0x00, 0xAA, 0x11, 0xBB, 0x22, 0xCC}, []byte{':'}, 1, "00:aa:11:bb:22:cc"},
 		{[]byte{0x00, 0xAA, 0x11, 0xBB, 0x22, 0xCC}, []byte{'-'}, 1, "00-aa-11-bb-22-cc"},
 		{[]byte{0x00, 0xAA, 0x11, 0xBB, 0x22, 0xCC}, []byte{'.'}, 2, "00aa.11bb.22cc"},

@@ -389,3 +389,7 @@ issues:
         - gosec
         - noctx
         - wrapcheck
+    - path: ^cmd/ # give cobra a break
+      linters:
+        - gochecknoglobals
+        - gochecknoinits
