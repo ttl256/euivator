@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	berrors "github.com/pkg/errors"
 
@@ -15,19 +16,12 @@ import (
 	"github.com/ttl256/euivator/internal/registry"
 )
 
-const LookupFile = "registry.gob"
-
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update OUI database",
 	Args:  cobra.ExactArgs(0),
 	RunE: func(cmd *cobra.Command, _ []string) error {
-		dir, err := cmd.Flags().GetString("dir")
-		if err != nil {
-			return berrors.WithStack(err)
-		}
-
-		return updateAction(cmd, dir, logger)
+		return updateAction(cmd, viper.GetString("cachedir"), logger)
 	},
 }
 
