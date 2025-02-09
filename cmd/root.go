@@ -4,20 +4,36 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	defaultConfigPath = filepath.Join(xdg.ConfigHome, appName)
+	logger            = new(slog.Logger)
+	logLevel          = new(slog.LevelVar)
+	version           = "dev"
 )
 
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "euivator",
+	Use:   appName,
 	Short: "A utility to work with EUIs",
+	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+		debug := viper.GetBool("debug")
+		if debug {
+			logLevel.Set(slog.LevelDebug)
+			logger.LogAttrs(cmd.Context(), slog.LevelDebug, "verbose logging enabled") //nolint: sloglint // let me be
+		}
+
+		return nil
+	},
+	Version: version,
 }
 
 func Execute() {
@@ -30,19 +46,36 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.euivator.yaml)")
+	var loggerOptions = new(slog.HandlerOptions)
+	loggerOptions.Level = logLevel
+	logLevel.Set(slog.LevelInfo)
+	logger = slog.New(slog.NewTextHandler(os.Stdout, loggerOptions))
+
+	rootCmd.PersistentFlags().StringVar(
+		&cfgFile,
+		"config",
+		"",
+		fmt.Sprintf("config file (default is %s)", filepath.Join(
+			defaultConfigPath, strings.Join([]string{appName, "yaml"}, ".")),
+		),
+	)
+	rootCmd.PersistentFlags().Bool("debug", false, "enable verbose logging")
+	rootCmd.SetVersionTemplate(`{{printf "%s\n" .Version}}`)
+
+	replacer := strings.NewReplacer("-", "_")
+	viper.SetEnvKeyReplacer(replacer)
+	viper.SetEnvPrefix("EUIVATOR")
+
+	_ = viper.BindPFlag("debug", rootCmd.Flags().Lookup("debug"))
 }
 
 func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(defaultConfigPath)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".euivator")
+		viper.SetConfigName(appName)
 	}
 
 	viper.AutomaticEnv()
