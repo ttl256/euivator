@@ -3,7 +3,7 @@
 GOCMD := go
 
 EUIVATOR_CLI_BIN := euivator
-EUIVATOR_CLI_DIR := cmd/euivator
+VERSION := $(shell git describe --tags --abbrev=0 --always)
 
 GOLANGCI_CFG := .golangci.yml
 
@@ -31,7 +31,7 @@ tidy:
 
 .PHONY: build
 build:
-	$(GOCMD) build -o ./bin/$(EUIVATOR_CLI_BIN) ./$(EUIVATOR_CLI_DIR)
+	$(GOCMD) build -ldflags="-X github.com/ttl256/$(EUIVATOR_CLI_BIN)/cmd.version=$(VERSION)" -o ./bin/$(EUIVATOR_CLI_BIN)
 
 # OPS
 
