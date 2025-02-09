@@ -17,7 +17,7 @@ func main() {
 
 	ctx := context.Background()
 
-	err := fetch.DownloadFiles(ctx)
+	err := fetch.DownloadFiles(ctx, true)
 	if err != nil {
 		logger.LogAttrs(ctx, slog.LevelError, "error", slog.Any("error", err))
 		os.Exit(1)

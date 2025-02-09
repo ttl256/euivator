@@ -19,6 +19,8 @@ import (
 	"github.com/ttl256/euivator/internal/registry"
 )
 
+const ETagsFile = "etags.json"
+
 type RespURLHeader struct {
 	URL    string
 	Header http.Header
@@ -37,7 +39,7 @@ func New(sources []Source, dir string, logger *slog.Logger) *Fetcher {
 	return &Fetcher{
 		Sources:   sources,
 		Dir:       dir,
-		ETagsFile: filepath.Join(dir, "etags.json"),
+		ETagsFile: filepath.Join(dir, ETagsFile),
 		Logger:    logger,
 	}
 }
@@ -50,7 +52,7 @@ func (s *Fetcher) SaveETags(tags ETagStorage) error {
 
 	f, err := os.OpenFile(
 		s.ETagsFile,
-		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+		os.O_CREATE|os.O_WRONLY,
 		0644,
 	)
 	if err != nil {
@@ -81,9 +83,13 @@ func (s *Fetcher) LoadETags() (ETagStorage, error) {
 	return *tags, nil
 }
 
-/**/
+/*
+DownloadFiles fetches OUI registry files. The download is omitted when all of
+the following conditions are true: 1) a file already exists locally 2) the use
+of ETags is enabled 3) ETags exist.
+*/
 //nolint: gocognit // fine
-func (s *Fetcher) DownloadFiles(ctx context.Context) error {
+func (s *Fetcher) DownloadFiles(ctx context.Context, useETags bool) error {
 	etags, err := s.LoadETags()
 	if err != nil {
 		// Ignore absence of etags file.
@@ -103,10 +109,21 @@ func (s *Fetcher) DownloadFiles(ctx context.Context) error {
 	for _, source := range s.Sources {
 		g.Go(func() error {
 			filepath := filepath.Join(s.Dir, strings.Join([]string{string(source.RegistryName), "csv"}, "."))
+
+			var fileExists = true
+			_, err = os.Stat(filepath)
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					fileExists = false
+				} else {
+					return fmt.Errorf("checking whether %q exists: %w", filepath, err)
+				}
+			}
+
 			var f *os.File
 			f, err = os.OpenFile(
 				filepath,
-				os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+				os.O_CREATE|os.O_WRONLY,
 				0644,
 			)
 			if err != nil {
@@ -115,8 +132,10 @@ func (s *Fetcher) DownloadFiles(ctx context.Context) error {
 			defer f.Close()
 
 			header := make(http.Header)
-			if etag, ok := etags[source.URL.String()]; ok {
-				header.Set("If-None-Match", etag)
+			if fileExists && useETags {
+				if etag, ok := etags[source.URL.String()]; ok {
+					header.Set("If-None-Match", etag)
+				}
 			}
 			var respHeader http.Header
 			respHeader, err = FetchFile(ctxGroup, source.URL, &header, f, s.Logger)
@@ -193,7 +212,7 @@ func GetSources() []Source {
 func FetchFile(
 	ctx context.Context, URL url.URL, headers *http.Header, w io.Writer, logger *slog.Logger,
 ) (http.Header, error) {
-	logger.LogAttrs(ctx, slog.LevelDebug, "starting download", slog.String("url", URL.String()))
+	logger.LogAttrs(ctx, slog.LevelInfo, "fetching", slog.String("url", URL.String()))
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, URL.String(), nil)
 	if err != nil {
@@ -207,6 +226,13 @@ func FetchFile(
 			}
 		}
 	}
+	logger.LogAttrs(
+		ctx,
+		slog.LevelDebug,
+		"starting download",
+		slog.String("url", URL.String()),
+		slog.Any("headers", req.Header),
+	)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -214,7 +240,14 @@ func FetchFile(
 	}
 	defer resp.Body.Close()
 
-	logger.LogAttrs(ctx, slog.LevelDebug, "response", slog.String("url", URL.String()), slog.Int("code", resp.StatusCode))
+	logger.LogAttrs(
+		ctx,
+		slog.LevelDebug,
+		"response",
+		slog.String("url", URL.String()),
+		slog.Int("code", resp.StatusCode),
+		slog.Any("header", resp.Header),
+	)
 
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -227,7 +260,7 @@ func FetchFile(
 
 		logger.LogAttrs(
 			ctx,
-			slog.LevelDebug,
+			slog.LevelInfo,
 			"finished download",
 			slog.String("url", URL.String()),
 			slog.String("size", humanize.Bytes(uint64(n))), //nolint: gosec // n is always non-negative
@@ -235,7 +268,7 @@ func FetchFile(
 	case http.StatusNotModified:
 		logger.LogAttrs(
 			ctx,
-			slog.LevelDebug,
+			slog.LevelInfo,
 			"omitting download",
 			slog.String("url", URL.String()),
 		)

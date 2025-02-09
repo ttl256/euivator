@@ -3,6 +3,7 @@ module github.com/ttl256/euivator
 go 1.23.4
 
 require (
+	github.com/adrg/xdg v0.5.3
 	github.com/dustin/go-humanize v1.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.1
