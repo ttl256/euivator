@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -66,7 +67,7 @@ func init() {
 	viper.SetEnvKeyReplacer(replacer)
 	viper.SetEnvPrefix("EUIVATOR")
 
-	_ = viper.BindPFlag("debug", rootCmd.Flags().Lookup("debug"))
+	_ = viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 }
 
 func initConfig() {
@@ -80,7 +81,9 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		if !errors.As(err, new(viper.ConfigFileNotFoundError)) {
+			cobra.CheckErr(err)
+		}
 	}
 }

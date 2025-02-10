@@ -21,18 +21,18 @@ func TestTrie(t *testing.T) {
 		},
 		{
 			input: []registry.Record{
-				{Assignment: []byte("F"), Registry: registry.NameMAL, OrgName: "A", OrgAddress: "A"},
-				{Assignment: []byte("F"), Registry: registry.NameMAL, OrgName: "B", OrgAddress: "B"},
-				{Assignment: []byte("FA"), Registry: registry.NameMAL, OrgName: "C", OrgAddress: "C"},
-				{Assignment: []byte("FB"), Registry: registry.NameMAL, OrgName: "D", OrgAddress: "D"},
-				{Assignment: []byte("FAB"), Registry: registry.NameMAL, OrgName: "F", OrgAddress: "F"},
+				{Assignment: "F", Registry: registry.NameMAL, OrgName: "A", OrgAddress: "A"},
+				{Assignment: "F", Registry: registry.NameMAL, OrgName: "B", OrgAddress: "B"},
+				{Assignment: "FA", Registry: registry.NameMAL, OrgName: "C", OrgAddress: "C"},
+				{Assignment: "FB", Registry: registry.NameMAL, OrgName: "D", OrgAddress: "D"},
+				{Assignment: "FAB", Registry: registry.NameMAL, OrgName: "F", OrgAddress: "F"},
 			},
 			want: []registry.Record{
-				{Assignment: []byte("F"), Registry: registry.NameMAL, OrgName: "A", OrgAddress: "A"},
-				{Assignment: []byte("F"), Registry: registry.NameMAL, OrgName: "B", OrgAddress: "B"},
-				{Assignment: []byte("FA"), Registry: registry.NameMAL, OrgName: "C", OrgAddress: "C"},
-				{Assignment: []byte("FB"), Registry: registry.NameMAL, OrgName: "D", OrgAddress: "D"},
-				{Assignment: []byte("FAB"), Registry: registry.NameMAL, OrgName: "F", OrgAddress: "F"},
+				{Assignment: "F", Registry: registry.NameMAL, OrgName: "A", OrgAddress: "A"},
+				{Assignment: "F", Registry: registry.NameMAL, OrgName: "B", OrgAddress: "B"},
+				{Assignment: "FA", Registry: registry.NameMAL, OrgName: "C", OrgAddress: "C"},
+				{Assignment: "FB", Registry: registry.NameMAL, OrgName: "D", OrgAddress: "D"},
+				{Assignment: "FAB", Registry: registry.NameMAL, OrgName: "F", OrgAddress: "F"},
 			},
 		},
 	}

@@ -23,21 +23,21 @@ MA-S,8C1F6480A,ASDF Corporation,"Address: 20F.-1, No. 8, County TW 30244 "
 `, []registry.Record{
 			{
 				Registry:   registry.NameMAS,
-				Assignment: []byte("8C1F64ABA"),
+				Assignment: "8C1F64ABA",
 				OrgName:    "COOL DEVICES, INC",
-				OrgAddress: "32 NORTHWESTERN HH AA US 01079 ",
+				OrgAddress: "32 NORTHWESTERN HH AA US 01079",
 			},
 			{
 				Registry:   registry.NameMAS,
-				Assignment: []byte("8C1B649B9"),
+				Assignment: "8C1B649B9",
 				OrgName:    "EVEN COOLER DEVICES, S.L.",
-				OrgAddress: "Av. Onze de Setembre 13 Reus Tarragona ES 49203 ",
+				OrgAddress: "Av. Onze de Setembre 13 Reus Tarragona ES 49203",
 			},
 			{
 				Registry:   registry.NameMAS,
-				Assignment: []byte("8C1F6480A"),
+				Assignment: "8C1F6480A",
 				OrgName:    "ASDF Corporation",
-				OrgAddress: "Address: 20F.-1, No. 8, County TW 30244 ",
+				OrgAddress: "Address: 20F.-1, No. 8, County TW 30244",
 			},
 		},
 		},
