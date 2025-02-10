@@ -19,6 +19,6 @@ func init() {
 	rootCmd.AddCommand(ouiCmd)
 	ouiCmd.PersistentFlags().String("cachedir", cacheDir, "Directory of the utility cache files")
 
-	_ = viper.BindPFlag("cachedir", ouiCmd.Flags().Lookup("cachedir"))
+	_ = viper.BindPFlag("cachedir", ouiCmd.PersistentFlags().Lookup("cachedir"))
 	viper.SetDefault("cachedir", cacheDir)
 }

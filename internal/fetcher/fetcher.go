@@ -142,7 +142,7 @@ func (s *Fetcher) DownloadFiles(ctx context.Context, useETags bool) error {
 			if err != nil {
 				return err
 			}
-			s.Logger.LogAttrs(ctx, slog.LevelDebug, "file saved", slog.String("path", filepath))
+			s.Logger.LogAttrs(ctx, slog.LevelDebug, "fetching complete", slog.String("path", filepath))
 
 			select {
 			case <-ctxGroup.Done():

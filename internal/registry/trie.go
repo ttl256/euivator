@@ -7,14 +7,14 @@ import (
 )
 
 type TrieNode struct {
-	Children map[byte]*TrieNode
+	Children map[rune]*TrieNode
 	Records  []Record
 }
 
 func NewTrieNode() *TrieNode {
 	return &TrieNode{
 		Records:  nil,
-		Children: make(map[byte]*TrieNode),
+		Children: make(map[rune]*TrieNode),
 	}
 }
 
@@ -45,7 +45,7 @@ func (t *Trie) InsertMany(records []Record) {
 	}
 }
 
-func (t *Trie) Lookup(prefix []byte) []Record {
+func (t *Trie) Lookup(prefix string) []Record {
 	node := t.Root
 	for _, b := range prefix {
 		if nextNode, found := node.Children[b]; found {
@@ -58,7 +58,7 @@ func (t *Trie) Lookup(prefix []byte) []Record {
 	return node.Records
 }
 
-func (t *Trie) LongestPrefixMatch(prefix []byte) []Record {
+func (t *Trie) LongestPrefixMatch(prefix string) []Record {
 	node := t.Root
 	var longestMatchNode *TrieNode
 
