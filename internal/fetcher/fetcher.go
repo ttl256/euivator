@@ -138,7 +138,7 @@ func (s *Fetcher) DownloadFiles(ctx context.Context, useETags bool) error {
 				}
 			}
 			var respHeader http.Header
-			respHeader, err = FetchFile(ctxGroup, source.URL, &header, f, s.Logger)
+			respHeader, err = fetchFile(ctxGroup, source.URL, &header, f, s.Logger)
 			if err != nil {
 				return err
 			}
@@ -210,7 +210,7 @@ func GetSources() []Source {
 
 /**/
 //nolint: gocritic // avoid collisions with url.URL
-func FetchFile(
+func fetchFile(
 	ctx context.Context, URL url.URL, headers *http.Header, w io.Writer, logger *slog.Logger,
 ) (http.Header, error) {
 	logger.LogAttrs(ctx, slog.LevelInfo, "fetching", slog.String("url", URL.String()))

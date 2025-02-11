@@ -17,7 +17,7 @@ var (
 	defaultConfigPath = filepath.Join(xdg.ConfigHome, appName)
 	logger            = new(slog.Logger)
 	logLevel          = new(slog.LevelVar)
-	version           = "dev"
+	version           = "dev" // Set from ldflags
 )
 
 var cfgFile string

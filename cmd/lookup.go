@@ -6,6 +6,7 @@ package cmd
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -31,7 +32,7 @@ type RecordResponse struct {
 var lookupCmd = &cobra.Command{
 	Use:          "lookup [hex_prefix ...]",
 	Short:        "Lookup an EUI/hex prefix in the OUI database",
-	Long:         `Lookup an EUI/hex prefix in the OUI database. Valid input is any hex string with any separators.`,
+	Long:         recordsResponseExample(),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var r io.Reader
@@ -50,8 +51,16 @@ func init() {
 }
 
 func lookupAction(w io.Writer, r io.Reader) error {
-	f, err := os.Open(filepath.Join(viper.GetString("cachedir"), LookupFile))
+	lookupFile := filepath.Join(viper.GetString("cachedir"), LookupFile)
+	f, err := os.Open(lookupFile)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf(
+				"unable to open %q. try running '%s oui update' to prepare required cache",
+				lookupFile,
+				appName,
+			)
+		}
 		return berrors.WithStack(err)
 	}
 	defer f.Close()
@@ -139,3 +148,25 @@ var (
 		return chars
 	}()
 )
+
+func recordsResponseExample() string {
+	data, err := json.MarshalIndent(RecordResponse{
+		Input:    "286FB9",
+		InputRaw: "28:6f:b9:11:22:33",
+		Records: []registry.Record{
+			{
+				Assignment: "286FB9",
+				Registry:   registry.NameMAL,
+				OrgName:    "Nokia Shanghai Bell Co., Ltd.",
+				OrgAddress: "No.388 Ning Qiao Road,Jin Qiao Pudong Shanghai Shanghai   CN 201206",
+			},
+		},
+	}, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	return fmt.Sprintf(`Lookup an EUI/hex prefix in the OUI database. Valid input is any hex string
+with separators from [-:.]. Output is a JSON. Example of the output:
+%s
+The records key contains a list of zero-length when allocation is not found`, data)
+}

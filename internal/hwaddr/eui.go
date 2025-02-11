@@ -1,3 +1,13 @@
+/*
+hwaddr package is very similar to net package from the standard library.
+Features:
+- Allow plain EUI format (without any delimiters)
+- Provide convenience functions to:
+	- stringify an EUI specifying common formats
+	- produce EUI-64 modified from EUI-48
+	- produce an IPv6 address from EUI-64 and an IPv6 prefix
+*/
+
 package hwaddr
 
 import (
