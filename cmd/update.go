@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -46,7 +47,9 @@ func updateAction(cmd *cobra.Command, dir string, logger *slog.Logger) error {
 	trie := registry.NewTrie()
 
 	for _, file := range registry.NameNames() {
-		err = appendFromCVStoTrie(trie, filepath.Join(dir, strings.Join([]string{file, "csv"}, ".")))
+		err = appendFromCVStoTrie(
+			cmd.Context(), trie, filepath.Join(dir, strings.Join([]string{file, "csv"}, ".")), logger,
+		)
 		if err != nil {
 			return err
 		}
@@ -73,7 +76,7 @@ func updateAction(cmd *cobra.Command, dir string, logger *slog.Logger) error {
 	return nil
 }
 
-func appendFromCVStoTrie(t *registry.Trie, path string) error {
+func appendFromCVStoTrie(ctx context.Context, t *registry.Trie, path string, logger *slog.Logger) error {
 	f, err := os.Open(path)
 	if err != nil {
 		return berrors.WithStack(err)
@@ -86,5 +89,7 @@ func appendFromCVStoTrie(t *registry.Trie, path string) error {
 	}
 
 	t.InsertMany(records)
+	logger.LogAttrs(ctx, slog.LevelInfo, "parsed", slog.String("path", path), slog.Int("count", len(records)))
+
 	return nil
 }

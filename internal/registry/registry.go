@@ -50,7 +50,7 @@ func ParseRecordsFromCSV(r io.Reader) ([]Record, error) {
 			return nil, fmt.Errorf("error reading CSV data: %w", err)
 		}
 
-		record, err = ParseLine(line)
+		record, err = parseLine(line)
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +61,7 @@ func ParseRecordsFromCSV(r io.Reader) ([]Record, error) {
 	return records, nil
 }
 
-func ParseLine(lineFields []string) (Record, error) {
+func parseLine(lineFields []string) (Record, error) {
 	line := make([]string, len(lineFields))
 	copy(line, lineFields)
 
@@ -77,6 +77,7 @@ func ParseLine(lineFields []string) (Record, error) {
 	return Record{Registry: registryName, Assignment: line[1], OrgName: line[2], OrgAddress: line[3]}, nil
 }
 
+// Implements sort interface to consistently compare slices of records in tests.
 type RecordS []Record
 
 func (r RecordS) Len() int {

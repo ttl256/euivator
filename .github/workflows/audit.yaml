@@ -38,4 +38,4 @@ jobs:
         run: go test -race ./...
 
       - name: Build
-        run: go build -v -o ./bin/euivator ./cmd/euivator
+        run: go build -v -o ./bin/euivator
