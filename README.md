@@ -1,4 +1,4 @@
-![Audit status](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg) ![Release status](https://github.com/ttl256/euivator/actions/workflows/release.yaml/badge.svg)
+[![Audit](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/audit.yaml) [![Release](https://github.com/ttl256/euivator/actions/workflows/release.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/release.yaml)
 
 # euivator
 
