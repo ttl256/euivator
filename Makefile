@@ -31,12 +31,7 @@ tidy:
 
 .PHONY: build
 build:
-	$(GOCMD) build -ldflags="-X github.com/ttl256/$(EUIVATOR_CLI_BIN)/cmd.version=$(VERSION)" -o ./bin/$(EUIVATOR_CLI_BIN)
-
-.PHONY: build_prod
-build_prod:
-	$(GOCMD) build -trimpath -ldflags="-s -w -X github.com/ttl256/$(EUIVATOR_CLI_BIN)/cmd.version=$(VERSION)" -o ./bin/$(EUIVATOR_CLI_BIN)
-	upx -qq --best ./bin/$(EUIVATOR_CLI_BIN)
+	$(GOCMD) build -ldflags="-X main.version=$(VERSION)" -o ./bin/$(EUIVATOR_CLI_BIN)
 
 # OPS
 
@@ -50,3 +45,4 @@ confirm:
 
 .PHONY: push
 push: confirm audit build no-dirty
+	git push

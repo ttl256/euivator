@@ -1,0 +1,76 @@
+version: 2
+
+project_name: euivator
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - binary: euivator
+    main: ./
+    flags:
+      - -trimpath
+    ldflags:
+      - "-s -w -X main.version={{ .Version }}"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - freebsd
+      - windows
+
+archives:
+  - formats: [ 'tar.gz' ]
+    # Must specify name_template to enable wrap_in_directory feature
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        formats: [ 'zip' ]
+    files:
+      - LICENSE
+      - README.md
+
+brews:
+  - description: "A CLI tool to work with EUIs"
+    homepage: "https://github.com/ttl256/euivator"
+    directory: Formula
+    skip_upload: auto
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    extra_install: |
+      output = Utils.popen_read("#{bin}/{{ .ProjectName }} completion bash")
+      (bash_completion/"{{ .ProjectName }}").write output
+      output = Utils.popen_read("#{bin}/{{ .ProjectName }} completion zsh")
+      (zsh_completion/"_{{ .ProjectName }}").write output
+      output = Utils.popen_read("#{bin}/{{ .ProjectName }} completion fish")
+      (fish_completion/"{{ .ProjectName }}.fish").write output
+      prefix.install_metafiles
+    test: |
+      system "#{bin}/{{ .ProjectName }} --version"
+    repository:
+      owner: ttl256
+      name: homebrew-euivator
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+
+nfpms:
+  - id: linux_packages
+    description: "A CLI tool to work with EUIs"
+    formats:
+      - deb
+      - rpm
+
+publishers:
+  - name: fury.io
+    ids:
+      - linux_packages
+    dir: '{{ dir .ArtifactPath }}'
+    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/ttl256/
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

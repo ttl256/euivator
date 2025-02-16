@@ -1,6 +1,8 @@
-![Audit status](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg)
+![Audit status](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg) ![Release status](https://github.com/ttl256/euivator/actions/workflows/release.yaml/badge.svg)
 
 # euivator
+
+A CLI tool to work with EUIs
 
 - Work with EUIs
   - Verify whether a given string is a valid EUI
@@ -31,18 +33,90 @@
   one is correct
 - The OUI lookup performed in the longest prefix match manner
 
+## Install
+
+### Binary release
+
+The following command installs the latest version to `~/.local/bin`
+
+```sh
+curl -sSfL https://raw.githubusercontent.com/ttl256/euivator/HEAD/install.sh | sh -s -- -b ~/.local/bin
+```
+
+```
+Usage: install.sh [-b <bindir>] [-d] [<tag>]
+  -b sets bindir or installation directory, Defaults to ./bin
+  -d turns on debug logging
+   <tag> is a tag from
+   https://github.com/ttl256/euivator/releases
+   If tag is missing, then the latest will be used.
+```
+
+### MacOS (brew)
+
+```sh
+brew tap ttl256/euivator && \
+brew install euivator
+```
+
+### Linux
+
+#### APT/DEB
+
+```sh
+echo "deb [trusted=yes] https://apt.fury.io/ttl256/ /" > /etc/apt/sources.list.d/ttl256.fury.list && \
+apt update && \
+apt install euivator
+```
+
+#### YUM/RPM
+
+```sh
+cat <<EOF >> /etc/yum.repos.d/ttl256.fury.repo
+[fury-ttl256]
+name=ttl256
+baseurl=https://yum.fury.io/ttl256/
+enabled=1
+gpgcheck=0
+EOF
+
+yum update && \
+yum install euivator
+```
+
+### Build from source
+
+```sh
+make build
+```
+
+## After installation
+
+OUI registries are not downloaded as part of the post-install to not mess users
+who just want to convert EUIs without OUI lookups.
+
+Download OUI registries
+
+```sh
+euivator oui update
+```
+
 ## Examples
 
 ```sh
+# Convert EUIs
 $ euivator eui convert --format dot DE:AD:BE:EF:11:22
 dead.beef.1122
 $ echo "DEADBEEF1122\nDE:AD:BE:EF:11:22:33:44" | euivator eui convert --format dash
 de-ad-be-ef-11-22
 de-ad-be-ef-11-22-33-44
+# Generate EUI-64 modified
 $ euivator eui modified DEADBEEF1122
 dc:ad:be:ff:fe:ef:11:22
+# Generate IPv6 address from a prefix and an EUI
 $ euivator eui addr6 2001:db8:dead:beef::/64 00:00:00:00:00:00
 2001:db8:dead:beef:200:ff:fe00:0
+# Lookup OUI allocation by EUI
 $ euivator oui lookup 28:6f:b9:11:22:33 | jq
 {
   "input": "286FB9112233",
@@ -56,6 +130,8 @@ $ euivator oui lookup 28:6f:b9:11:22:33 | jq
     }
   ]
 }
+# Lookup OUIs for interfaces on your machine
+$ ifconfig | awk '/ether/ {print $2}' | euivator oui lookup | jq -c 'select(.records | length > 0)'
 ```
 
 ## IEEE, ETags and two smoking nodes

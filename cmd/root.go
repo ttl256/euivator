@@ -17,14 +17,13 @@ var (
 	defaultConfigPath = filepath.Join(xdg.ConfigHome, appName)
 	logger            = new(slog.Logger)
 	logLevel          = new(slog.LevelVar)
-	version           = "dev" // Set from ldflags
 )
 
 var cfgFile string
 
 var rootCmd = &cobra.Command{
 	Use:   appName,
-	Short: "A utility to work with EUIs",
+	Short: "A CLI tool to work with EUIs",
 	PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 		debug := viper.GetBool("debug")
 		if debug {
@@ -34,7 +33,6 @@ var rootCmd = &cobra.Command{
 
 		return nil
 	},
-	Version: version,
 }
 
 func Execute() {
@@ -42,6 +40,10 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func SetVersion(version string) {
+	rootCmd.Version = version
 }
 
 func init() {
