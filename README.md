@@ -144,3 +144,8 @@ TLDR; IEEE uses default nginx config to generate ETags. The algorithm takes
 last-modified and content-length headers as an input to generate ETag. Multiple
 nodes serve the files and last-modified differs for each of them by a few
 seconds.
+
+## Configuration
+
+Refer to `configs/euivator.yaml.sample` to check available options. Same options
+are available via environment variables in the form of `EUIVATOR_*`.
