@@ -149,3 +149,11 @@ seconds.
 
 Refer to `configs/euivator.yaml.sample` to check available options. Same options
 are available via environment variables in the form of `EUIVATOR_*`.
+
+## Similar software
+
+- [oui](https://github.com/thatmattlove/oui)
+  - Does not accept arguments from the standard input
+  - Output is pretty-table-formatted which makes it hard to pipeline with other
+    CLI tools
+  - Does not cache OUI registries
