@@ -1,4 +1,6 @@
-[![Audit](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/audit.yaml) [![Release](https://github.com/ttl256/euivator/actions/workflows/release.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/release.yaml)
+![GitHub Release](https://img.shields.io/github/v/release/ttl256/euivator?link=https%3A%2F%2Fgithub.com%2Fttl256%2Feuivator%2Freleases)
+[![Audit](https://github.com/ttl256/euivator/actions/workflows/audit.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/audit.yaml)
+[![Release](https://github.com/ttl256/euivator/actions/workflows/release.yaml/badge.svg)](https://github.com/ttl256/euivator/actions/workflows/release.yaml)
 
 # euivator
 
