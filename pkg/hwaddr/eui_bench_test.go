@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/ttl256/euivator/internal/hwaddr"
+	"github.com/ttl256/euivator/pkg/hwaddr"
 )
 
 var resultString string //nolint: gochecknoglobals // avoid compiler optimization

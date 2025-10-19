@@ -19,8 +19,8 @@ import (
 
 	berrors "github.com/pkg/errors"
 
-	"github.com/ttl256/euivator/internal/hwaddr"
 	"github.com/ttl256/euivator/internal/registry"
+	"github.com/ttl256/euivator/pkg/hwaddr"
 )
 
 type RecordResponse struct {

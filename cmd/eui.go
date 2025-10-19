@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/ttl256/euivator/internal/hwaddr"
+	"github.com/ttl256/euivator/pkg/hwaddr"
 )
 
 // ENUM(COLON, DASH, DOT, PLAIN).
